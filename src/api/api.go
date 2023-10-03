@@ -18,7 +18,7 @@ import (
 
 func InitServer(cfg *config.Config) {
 	var log = logging.NewLogger(cfg)
-
+	gin.SetMode(cfg.Server.RunMode)
 	r := gin.New()
 	r.Use(gin.Recovery())
 	r.Use(middleware.Cors(cfg), middleware.CustomLogger(log), middleware.Limiter())
@@ -27,7 +27,7 @@ func InitServer(cfg *config.Config) {
 	registerRoutes(r, cfg)
 	registerValidators()
 
-	err := r.Run(fmt.Sprintf(":%d", cfg.Server.Port))
+	err := r.Run(fmt.Sprintf(":%d", cfg.Server.InternalPort))
 	if err != nil {
 		log.Fatal(err, logging.Internal, logging.Api, "run failed ", nil)
 		return
@@ -92,6 +92,6 @@ func swaggerInit(cfg *config.Config, r *gin.Engine) {
 	docs.SwaggerInfo.Version = "1.0"
 	docs.SwaggerInfo.Schemes = []string{"http"}
 	docs.SwaggerInfo.BasePath = "/api"
-	docs.SwaggerInfo.Host = fmt.Sprintf("localhost:%d", cfg.Server.Port)
+	docs.SwaggerInfo.Host = fmt.Sprintf("localhost:%d", cfg.Server.ExternalPort)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 }

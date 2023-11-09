@@ -82,7 +82,7 @@ type PasswordConf struct {
 
 func configPath(env string) string {
 	if env == "production" {
-		return "../config/config-production.yml"
+		return "./config/config-production.yml"
 	}
 	if env == "docker" {
 		return "../config/config-docker.yml"
@@ -116,7 +116,7 @@ func parseConfig(v *viper.Viper) (cfg *Config, err error) {
 }
 
 func GetConfig() *Config {
-	env := os.Getenv("APP_ENV")
+	env := os.Getenv("production")
 	// TODO: fix environ
 	path := configPath(env)
 	v, err := loadConfig(path, "yml")
